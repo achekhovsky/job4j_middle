@@ -60,7 +60,7 @@ public class RectangleMove implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
+        while (!Thread.currentThread().isInterrupted()) {
             if (this.rect.getParent().getScene() != null) {
             	if (this.checkBoundaries(
             			this.rect.getParent().getScene().getHeight(), 
@@ -74,6 +74,7 @@ public class RectangleMove implements Runnable {
                 Thread.sleep(50);
             } catch (InterruptedException e) {
                 log.warn(e.getMessage());
+                Thread.currentThread().interrupt();
             }
         }
     }

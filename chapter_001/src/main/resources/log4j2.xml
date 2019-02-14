@@ -16,12 +16,13 @@
 			<Layout type="PatternLayout">
 				<Pattern>%d %p %C{3.} [%t] %m%n</Pattern>
 			</Layout>
-			<ThresholdFilter level="warn" onMatch="ACCEPT" onMismatch="DENY"/>
+			<ThresholdFilter level="warn" onMatch="ACCEPT" onMismatch="NEUTRAL"/>
+			<ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="NEUTRAL"/>
 		</Appender>
 	</Appenders>
 
 	<Loggers>
-		<Logger name="customLog" level="warn"
+		<Logger name="customLog" level="error"
 			additivity="false">
 			<AppenderRef ref="File" />
 		</Logger>	

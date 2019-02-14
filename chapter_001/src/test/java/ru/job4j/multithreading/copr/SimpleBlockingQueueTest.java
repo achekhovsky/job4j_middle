@@ -1,6 +1,11 @@
 package ru.job4j.multithreading.copr;
 
 import static org.junit.Assert.*;
+
+import java.util.Arrays;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.IntStream;
+
 import static org.hamcrest.core.Is.is;
 
 import org.junit.Before;
@@ -36,5 +41,33 @@ public class SimpleBlockingQueueTest {
 		
 		assertThat(9, is(c.getLastValue()));
 	}
+	
+    @Test
+    public void whenFetchAllThenGetIt() throws InterruptedException {
+        final CopyOnWriteArrayList<Integer> buffer = new CopyOnWriteArrayList<>();
+        Thread producer = new Thread(
+                () -> {
+                    IntStream.range(0, 5).forEach(
+                            sbk::offer
+                    );
+                }
+        );
+        producer.start();
+        Thread consumer = new Thread(
+                () -> {
+                    while (true) {
+                    	Integer polled = sbk.poll();
+                    	if (polled != null) {
+                    		buffer.add(polled);
+                    	}
+                    }
+                }
+        );
+        consumer.start();
+        producer.join();
+        consumer.interrupt();
+        consumer.join(2000);
+        assertThat(buffer, is(Arrays.asList(0, 1, 2, 3, 4)));
+    }
 
 }

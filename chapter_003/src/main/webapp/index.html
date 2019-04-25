@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Orders</title>
+</head>
+<body>
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="bootstrap/js/bootstrap.js"></script>
+<script src="js/index.js"></script>
+
+<script lang="javascript">
+	window.onload = setTimeout(function timer() { 
+		doAction("orders", "getOrders", null); 
+		setTimeout(timer, 10000);
+	}, 100);
+</script>
+
+
+<div class="container">
+        <h4 class="text-center">
+            O R D E R S
+        </h4>
+    <div class="row pt-3">
+	<table id="orderstable" class="table table-borderless table-hover text-center table-sm">
+			<thead class="table-sm border-bottom">
+				<tr>
+					<th class="text-center">id</th>
+					<th class="text-center">create date</th>
+					<th class="text-center">name</th>
+					<th class="text-center">description</th>
+					<th class="text-center">status</th>
+					<th class="text-center">
+<!-- 			<div class="row float-right">
+				<div class="btn-group btn-group-toggle btn-xs" data-toggle="buttons">
+					  <label class="btn btn-secondary btn-xs active">
+					    <input type="radio" name="hideRdy" id="all" value="on" checked> Show all
+					  </label>
+					  <label class="btn btn-secondary btn-xs">
+					    <input type="radio" name="hideRdy" id="rdy" value="off"> Hide rdy
+					  </label>
+				</div>
+			</div> -->
+			<div class="row float-right">
+			    <input type="checkbox" onchange="return doAction('orders', 'getNotRdy')"> Hide ready
+			</div>
+				</th>
+				</tr>
+			</thead>
+		<tbody>	</tbody>
+	</table>  
+    </div>
+</div>
+
+			<br>
+		<form class="form-signin" name="createOrder" action="index.html" method="POST"
+			id="createForm" onsubmit="return findEmptyInputs()">
+			
+			<div class="row justify-content-center">
+			<div class="col-4">
+			<h4 class="h4 text-center mb-4 font-weight-normal">Create order</h3>
+			<div class="form-row mb-4">
+			 <div class="col">
+              <div class="input-group">
+                <div class="input-group-prepend">
+         			<div class="input-group-text">id:</div>
+        		</div>
+                <input class="form-control" id="orderId" name="id" placeholder="" value="id" type="text">
+                <div class="invalid-feedback">
+                  Valid id is required.
+                </div>
+              </div>
+              </div>
+              <div class="col">
+              <div class="input-group">
+                <div class="input-group-prepend">
+         			<div class="input-group-text">name:</div>
+        		</div>
+				<input class="form-control" id="orderName" name="ordername" placeholder="" value="" type="text">
+                <div class="invalid-feedback">
+                  Please fill out this field.
+              </div>
+              </div>
+            </div>
+   		  	</div>
+   		  	
+   		  	<div class="form-row mb-4">
+   		  	  <div class="col">
+              <div class="input-group">
+                <div class="input-group-prepend">
+         			<div class="input-group-text">description:</div>
+        		</div>
+                <input class="form-control" id="orderDescription" name="orderdescription" placeholder="" value="" type="text">
+                <div class="invalid-feedback">
+                  Valid description is required.
+                </div>
+              </div>
+              </div>
+   		  	</div>
+
+   		  	<div class="row justify-content-end">
+   		  	<div>
+        		<button id="pay" type="button" class="btn btn-success" onclick="return doAction('orders', 'addOrder', 'createForm')">Add</button>
+			</div>
+			</div>
+			</div>
+			</div>
+		</form>
+</body>
+</html>
+
+
+
+
+

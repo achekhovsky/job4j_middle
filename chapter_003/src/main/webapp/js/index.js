@@ -1,4 +1,5 @@
 var ORDERS;
+var hideRdy = false;
 
 function getFormsInputValues(formId) {
 	let formData = {};
@@ -11,13 +12,73 @@ function getFormsInputValues(formId) {
 			function(item) {
 				if(item.type == "checkbox") {
 					formData[item.name] = item.checked;
-					console.log("CHECKED - " + item.checked);
 				} else {
 					formData[item.name] = item.value;
 				}
 				}
 			);
 	return formData; 
+}
+
+
+function getCheckboxesValues(formId) {
+	let formCheckboxes = {};
+	let node;
+	node = document.querySelectorAll("form[id = '" + formId + "'] input");
+	if(node.length == 0) {
+		node = document.querySelectorAll("input[form='" + formId + "']");
+	}
+	node.forEach(
+			function(item) {
+				if(item.type == "checkbox") {
+					formCheckboxes[item.name] = item.checked;
+				} 
+			});
+	return formCheckboxes; 
+}
+
+function processParamsToSendd(action, formId) {
+	let frmData;
+	if(formId) {
+		frmData = new FormData(document.getElementById(formId));
+		let cbs = getCheckboxesValues(formId);
+		for(let key in cbs) {
+			frmData.set(key, cbs[key]);
+		}
+	}  else {
+		frmData = new FormData();
+	}
+	frmData.append("getAction", action);
+	frmData.append("hideRdy", hideRdy);
+	return frmData;
+}
+
+function setHideRdyMode(mode) {
+	if(typeof(mode) == "boolean") {
+		hideRdy = mode;
+	}
+}
+
+function doAction(url, action, formId) {
+	$.ajax({
+		type:"POST",
+		url: url,
+		processData: false, 
+		contentType: false,
+		data: processParamsToSendd(action, formId),
+		success: function (data) {	
+			for(let ordd in ORDERS) {
+			let orderToString = "";
+				for(let key in ORDERS[ordd]) {
+					orderToString += "[" + key + "]" + ORDERS[ordd][key] + " ";	
+				}
+			}
+			if(data.length != 0) { 
+  				ORDERS = JSON.parse(data);
+			}
+			setRows("orderstable", ORDERS);
+		}});
+		return false;
 }
 
 function findEmptyInputs() {
@@ -39,24 +100,6 @@ function getFormData(formId) {
 		obj += this.name + "=" + this.value + "&";
 	});
 	return obj;
-}
-
-function doAction(url, action, formId) {
-	$.ajax({
-		type:"POST",
-		url: url,
-		data: processParamsToSend(action, getFormsInputValues(formId)),
-		success: function (data) {	
-			ORDERS = JSON.parse(data);
-			setRows("orderstable", ORDERS);
-		}});
-		return false;
-}
-
-
-function processParamsToSend(action, form) {
-	form["getAction"] = arguments[0];
-	return form;
 }
 
 function clearTable(tableId) {
@@ -90,9 +133,17 @@ function addRow(table, order) {
 				inp.type = "checkbox";
 				inp.checked = order[key];
 				inp.addEventListener("change", function() {
-					doAction("orders", "updateStatus", order['id']);
+					doAction("orders", "UPDATE", order['id']);
 				});
-			} else {
+			} else if (key == "image") {
+				inp = document.createElement("img"); 
+				inp.width = "35px";
+				inp.height = "35px";
+				inp.style.width = "35px";
+				inp.style.height = "35px";
+				inp.src = 'data:image/png;base64,' + order[key].img;
+			}
+			else {
 				inp.type = "hidden";
 				td.textContent = order[key];
 			}
@@ -110,7 +161,7 @@ function addRow(table, order) {
 		btn.setAttribute('form', order['id']);
 		btn.textContent = "Delete";
 		btn.addEventListener("click", function() {
-			doAction("orders", "deleteOrder", order['id']);
+			doAction("orders", "DELETE", order['id']);
 		});
 		frm.insertAdjacentElement("beforeEnd", btn);
 		td.insertAdjacentElement("beforeEnd", btn);
@@ -120,4 +171,71 @@ function addRow(table, order) {
 	} 
 	table.tBodies[0].insertAdjacentElement("beforeEnd", row);
 }
+
+function stringToBuffer(string) {
+	    var string = btoa(unescape(encodeURIComponent(string))),
+	            charList = string.split(''),
+		            buffer = [];
+	        for (var i = 0; i < charList.length; i++) {
+			        buffer.push(charList[i].charCodeAt(0));
+				    }
+		    return buffer;
+}
+
+function convertToImage(buffer, onLoad) {
+  var mime;
+  var a = new Uint8Array(buffer);
+  var nb = a.length;
+  if (nb < 4)
+      return null;
+  var b0 = a[0];
+  var b1 = a[1];
+  var b2 = a[2];
+  var b3 = a[3];
+  if (b0 == 0x89 && b1 == 0x50 && b2 == 0x4E && b3 == 0x47)
+	  mime = 'image/png';
+  else if (b0 == 0xff && b1 == 0xd8)
+	  mime = 'image/jpeg';
+  else if (b0 == 0x47 && b1 == 0x49 && b2 == 0x46)
+      	  mime = 'image/gif';
+  else
+  return null;
+  var binary = "";
+  for (var i = 0; i < nb; i++)
+ 	 binary += String.fromCharCode(a[i]);
+  var base64 = window.btoa(binary);
+  var image = new Image();
+  image.onload = onLoad;
+  image.src = 'data:' + mime + ';base64,' + base64;
+  return image;
+}
+
+function setFileListener(inpFile, img) {
+  inpFile.addEventListener("change", function(event) {
+    var i = 0,
+    files = inpFile.files,
+    len = files.length;
+    for (; i < len; i++) {
+      let fr = new FileReader();
+      fr.addEventListener("load", function () {
+	      img.src = fr.result;
+      }, false);
+      fr.readAsDataURL(files[0]);
+    }                                                  
+  }, false);
+}
+  
+  function changeFile(event, imgId) {
+	    let i = 0,
+	    files = event.currentTarget.files,
+	    len = files.length,
+	    img = document.getElementById(imgId);
+	    for (; i < len; i++) {
+	      let fr = new FileReader();
+	      fr.addEventListener("load", function () {
+		      img.src = fr.result;
+	      }, false);
+	      fr.readAsDataURL(files[0]);                                                  
+	  }
+  }
 

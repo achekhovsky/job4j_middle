@@ -21,14 +21,14 @@
 *.tar.gz
 *.rar
 
+#Database files#
+*.db
+
 # Directory for the compiled files Maven
 target
 
 # Directory for the Eclipse metadata
 .metadata/
-
-# Not included directory 
-SPRN/
 
 # IDEA files
 .idea

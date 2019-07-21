@@ -15,10 +15,12 @@
 <script src="js/index.js"></script>
 
 <script lang="javascript">
-	window.onload = setTimeout(function timer() { 
-		doAction("orders", "getOrders", null); 
-		setTimeout(timer, 10000);
-	}, 100);
+	window.onload = function() {
+		setTimeout(function timer() { 
+			doAction("orders", "", null);
+			setTimeout(timer, 10000);
+		}, 100);	
+	}
 </script>
 
 
@@ -47,7 +49,7 @@
 				</div>
 			</div> -->
 			<div class="row float-right">
-			    <input type="checkbox" onchange="return doAction('orders', 'getNotRdy')"> Hide ready
+			    <input type="checkbox" onchange="return setHideRdyMode(checked)"> Hide ready
 			</div>
 				</th>
 				</tr>
@@ -64,6 +66,10 @@
 			<div class="row justify-content-center">
 			<div class="col-4">
 			<h4 class="h4 text-center mb-4 font-weight-normal">Create order</h3>
+			<div class="form-row mb-4">
+				<img src="" class="rounded mx-auto d-block border border-info" id="orderImage" alt="" width="75px" height="75px">
+				<input id="imageFile" name="image" type="file" onchange="changeFile(event, 'orderImage')" accept=".gif, .png, .jpg, .jpeg"/>
+			</div>
 			<div class="form-row mb-4">
 			 <div class="col">
               <div class="input-group">
@@ -105,7 +111,7 @@
 
    		  	<div class="row justify-content-end">
    		  	<div>
-        		<button id="pay" type="button" class="btn btn-success" onclick="return doAction('orders', 'addOrder', 'createForm')">Add</button>
+        		<button id="pay" type="button" class="btn btn-success" onclick="return doAction('orders', 'ADD', 'createForm')">Add</button>
 			</div>
 			</div>
 			</div>

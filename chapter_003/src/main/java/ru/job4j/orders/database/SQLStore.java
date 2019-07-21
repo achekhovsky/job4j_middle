@@ -12,9 +12,10 @@ import java.util.logging.Logger;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+
 import ru.job4j.orders.Order;
 
-public class SQLStore implements Store {
+public class SQLStore implements Store<Order> {
 	private static final Logger LOG = Logger.getLogger(SQLStore.class.getName());
 	private static final SQLStore STORE = new SQLStore();
 	private final DataSource source;
@@ -22,7 +23,7 @@ public class SQLStore implements Store {
 	private SQLStore() {
 		this.source = this.getSource();
 		this.initTable();
-		
+		//TODO Change double quotes to single quotes, insert done and version values 
 		this.add(new Order(1, "order_1", "description_1"));
 		this.add(new Order(2, "order_2", "description_2"));
 		this.add(new Order(3, "order_3", "description_3"));

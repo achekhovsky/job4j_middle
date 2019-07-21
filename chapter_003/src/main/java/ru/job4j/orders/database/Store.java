@@ -2,11 +2,11 @@ package ru.job4j.orders.database;
 
 import ru.job4j.orders.Order;
 
-public interface Store {
-	boolean add(Order plc);
+public interface Store<T> {
+	boolean add(T plc);
 	boolean deleteOrder(int id);
 	boolean updateStatus(int id, boolean status);
-	Order[] getOrders();
-	Order[] getNotRdyOrders();
+	T[] getOrders();
+	T[] getNotRdyOrders();
 }
 

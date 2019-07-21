@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings
+	xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation=" http://xmlns.jcp.org/xml/ns/persistence/orm
+http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd"
+	version="2.1">
+    <description> XML Mapping file for Order.class</description>
+      	<named-query name="deleteOrder">
+       	 <query><![CDATA[
+        	DELETE FROM Order o WHERE o.id = :oId
+         ]]></query>
+		</named-query>   
+		<named-query name="updateStatus">
+       	 <query><![CDATA[
+        	UPDATE Order o SET o.done = :oRdy WHERE o.id = :oId
+         ]]></query>
+		</named-query>   
+		<named-query name="selectOrders">
+       	 <query><![CDATA[
+        	SELECT o FROM Order o
+         ]]></query>
+		</named-query>   
+		<named-query name="selectNotRdyOrders">
+       	 <query><![CDATA[
+        	SELECT o FROM Order o WHERE o.done = 0
+         ]]></query>
+		</named-query> 
+		
+    <entity class="ru.job4j.orders.Order" name="Order">  
+     <index name = "idx_order_name" columnList = "name" unique = "false"/>    
+        <table name="j4jorders"/>
+        <entity-listeners>
+     		<entity-listener class = "ru.job4j.orders.database.jpa.listeners.OrderListener"/>
+     	</entity-listeners>  
+          
+        <attributes>
+            <id name="id">
+            </id>
+           <version name = "version"/>
+            <basic name="createDate">
+            	<convert converter="ru.job4j.orders.database.LDConverter"/>
+                <column name="createDate" column-definition = "text" nullable = "false" insertable = "true" updatable = "true" unique = "false" length = "10"/>
+            </basic>
+            <basic name="name">
+            	 <column name="name"/> 
+            </basic>
+            <basic name="description">
+            	 <column name="description"/> 
+            </basic>
+            <basic name="done">
+            	 <column name="done"/> 
+            </basic>
+            <one-to-one name="image" target-entity="ru.job4j.orders.OrderImage" orphan-removal="true" optional="true">
+            	<join-column name="oi_fk" referenced-column-name="id" nullable="true"></join-column>
+            	<cascade>
+            		<cascade-all/>
+            	</cascade>
+            </one-to-one>
+        </attributes>
+    </entity>
+    
+    <entity class="ru.job4j.orders.OrderImage" name="Image">  
+        <table name="OrderImage"/>
+          
+        <attributes>
+           <id name="id">
+           	<generated-value strategy="IDENTITY"/>
+           </id>
+           <version name = "version"/>
+           <basic name="img">
+                <column name="img" nullable = "true" insertable = "true" updatable = "true" unique = "false"/>
+           </basic>
+           <one-to-one name="order" target-entity="ru.job4j.orders.Order" mapped-by="image">
+           </one-to-one> 
+        </attributes>
+    </entity>
+</entity-mappings>
